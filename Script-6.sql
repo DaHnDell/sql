@@ -60,3 +60,112 @@ JOIN DEPARTMENT D USING(DEPTNO);
 SELECT S.DEPTNO -- 최소한 퀄리파이어를 사용해 주어야 ON에 대한 사용 조건이 특정된다. 
 FROM STUDENT s 
 JOIN DEPARTMENT d ON S.DEPTNO = D.DEPTNO; -- 언제나 칼럼명이 같을 수 없을 때 사용한다. 
+
+
+-- NATURAL JOIN 사용, 교수번호, 교수이름, 학과번호, 학과이름 조회
+
+SELECT PROFNO, NAME, DEPTNO, DNAME 
+FROM PROFESSOR p NATURAL JOIN DEPARTMENT d ;
+
+
+SELECT * FROM SALGRADE;
+
+SELECT PROFNO, NAME, SAL, GRADE
+FROM PROFESSOR , SALGRADE 
+WHERE SAL BETWEEN LOSAL AND HISAL;
+
+SELECT PROFNO, NAME, SAL, GRADE
+FROM PROFESSOR p 
+JOIN SALGRADE s ON SAL >= LOSAL AND SAL <= HISAL;
+
+SELECT *
+FROM STUDENT s 
+
+SELECT *
+FROM PROFESSOR p 
+
+-- 학번, 이름, 교수번호, 담당 교수 이름
+
+SELECT STUDNO, S.NAME, S.PROFNO, P.NAME AS 교수명
+FROM STUDENT S, PROFESSOR p  
+WHERE S.PROFNO = P.PROFNO 
+
+SELECT STUDNO, S.NAME, PROFNO, P.NAME 
+FROM STUDENT s 
+LEFT OUTER JOIN PROFESSOR p  USING(PROFNO);
+
+SELECT *
+FROM STUDENT s 
+
+SELECT  *
+FROM STUDENT s
+WHERE S.PROFNO IS NULL 
+
+
+-- 이런 식의 형태는 진짜 많이 봄!
+
+
+SELECT *
+FROM STUDENT s, PROFESSOR p
+WHERE S.PROFNO(+) = P.PROFNO(+);
+-- LEFT RIGHT 위치에 따라서 (+)위치를 달리하면 됨
+-- 심지어 (+) 연산자는 하나밖에 사용하지 못함. 
+
+
+-- 월별 탄생 학새 숫자 구하기
+
+SELECT
+	M,
+	NVL(CNT, 0)
+	CNT
+FROM
+	(
+	SELECT
+		TO_CHAR(BIRTHDATE, 'MM') M,
+		COUNT(*) CNT
+	FROM
+		STUDENT s
+	GROUP BY
+		TO_CHAR(BIRTHDATE, 'MM')
+) A
+FULL JOIN (
+	SELECT
+		TO_CHAR(ROWNUM, '00') M
+	FROM
+		STUDENT s
+	WHERE
+		ROWNUM <= 12
+) B
+		USING(M)
+		ORDER BY
+		1;
+		
+-- 부서 테이블에서 상위 부서 이름을 출력하는 것 
+	
+--SELECT D.DNAME , D2.DNAME 상위이름 
+--SELECT D.NAME || '의 소속학과는' || NCL(D2.DNAME, D2.DNAME || '입니다', '없습니다')
+--FROM DEPARTMENT d 
+--LEFT JOIN DEPARTMENT d2 -- 자기 자신 다시 호출해서 자기가 가지고 있던 상위 부서의 값의 칼럼과 
+--ON D.COLLEGE = D2.DEPTNO
+	
+	
+-- 학생의 학번, 이름, 담당교수의 교수번호, 교수이름, 학생의 소속학과이름을 조회
+-- 단 모든 학생의 정보를 조회
+	
+	SELECT * FROM STUDENT;
+	
+SELECT STUDNO, S.NAME, PROFNO, DNAME, P.NAME || '교수' PROFNAME
+FROM STUDENT s
+NATURAL JOIN DEPARTMENT d
+LEFT JOIN PROFESSOR p USING(PROFNO);
+-- WHERE와 FROM에 
+
+-- 서브쿼리
+-- 학번, 이름, 학과번호, 학과이름 조회
+
+
+-- 상호 연관 서브쿼리
+SELECT S.STUDNO, S.NAME, S.DEPTNO, (SELECT DNAME FROM DEPARTMENT d WHERE D.DEPNO = S.DEPTNO) DNAME;
+FROM STUDENT s;
+
+
